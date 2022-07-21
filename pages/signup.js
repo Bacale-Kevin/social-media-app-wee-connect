@@ -5,6 +5,7 @@ import axios from "axios";
 
 import { HeaderMessage, FooterMessage } from "../components/common/WelcomeMessage";
 import CommonInputs from "../components/common/CommonInputs";
+import ImageDropDiv from "../components/common/ImageDropDiv";
 
 const signup = () => {
   const [showSocialLinks, setShowSocialLinks] = useState(false);
@@ -32,12 +33,28 @@ const signup = () => {
 
   const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/; //user to validate the username field by not accepting special characters
 
+  /*******HANDLE IMAGE UPLOAD ******/
+  const [media, setMedia] = useState(null);
+  const [mediaPreview, setMediaPreview] = useState(null);
+  const [highlighted, setHighlighted] = useState(false);
+  const inputRef = useRef();
+
   /********** HANDLE CHANGE ***************/
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     setUser((prev) => ({ ...prev, [name]: value }));
   };
+
+  /********** HANDLE MEDIA CHANGE **********/
+  const handleMediaChange = (e) => {
+    const { name, files } = e.target;
+    if (name === "media") {
+      setMedia(files[0]);
+      setMediaPreview(URL.createObjectURL(files[0]));
+    }
+  };
+  
   /********** HANDLE SUBMIT ***************/
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -54,6 +71,18 @@ const signup = () => {
       <HeaderMessage />
       <Form loading={formLoading} error={errMsg !== null} onSubmit={handleSubmit}>
         <Message error header="Ooops!" content={errMsg} onDismiss={() => setErrMsg(null)} />
+
+        {/* Image Input */}
+        <ImageDropDiv
+          media={media}
+          highlited={highlighted}
+          inputRef={inputRef}
+          mediaPreview={mediaPreview}
+          setHighlited={setHighlighted}
+          setMedia={setMedia}
+          setMediaPreview={setMediaPreview}
+          handleChange={handleMediaChange}
+        />
 
         {/* <Segment> */}
         <Divider hidden />
@@ -118,7 +147,7 @@ const signup = () => {
               setUsernameAvailbale(false);
             }
           }}
-          icon={usernameAvailbale ? "check" : "close "}
+          icon={usernameAvailbale ? "check" : "close"}
           fluid
           iconPosition="left"
           required
