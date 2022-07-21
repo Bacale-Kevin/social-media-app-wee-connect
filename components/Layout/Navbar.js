@@ -10,7 +10,7 @@ function Navbar() {
 
   return (
     <Menu pointing secondary borderless>
-      <Container>
+      <Container text>
         <Link href="/login">
           <Menu.Item header active={isActive("/login")}>
             {/* <Icon size="small" name="sign in" /> */}
