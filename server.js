@@ -10,6 +10,11 @@ const PORT = process.env.PORT || 3000;
 connectDb();
 
 nextApp.prepare().then(() => {
+
+  //handle our custom routes
+  app.use('/api/signup', require('./api/signup'))
+  app.use("/api/auth", require("./api/auth"));
+
   app.all("*", (req, res) => handle(req, res)); // This code enable files in the pages folder to work properly
 
   server.listen(PORT, (err) => {
