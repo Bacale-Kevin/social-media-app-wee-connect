@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Form, Button, Message, Segment, TextArea, Divider } from "semantic-ui-react";
-import baseUrl from "../utils/baseUrl";
+import { Form, Button, Message, Divider } from "semantic-ui-react";
 import axios from "axios";
 
+import baseUrl from "../utils/baseUrl";
 import { HeaderMessage, FooterMessage } from "../components/common/WelcomeMessage";
 import CommonInputs from "../components/common/CommonInputs";
 import ImageDropDiv from "../components/common/ImageDropDiv";
@@ -11,12 +11,12 @@ const signup = () => {
   const [showSocialLinks, setShowSocialLinks] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errMsg, setErrMsg] = useState(null);
+  const [formLoading, setFormLoading] = useState(false);
   /**  Giving a seperate state to the username because we will check whether the
     username is available or not when we type */
   const [username, setUsername] = useState("");
   const [usernameLoading, setUsernameLoading] = useState(false); // laoding state that loads spinner when the user types his username in the input fields to check whether is available or not
   const [usernameAvailbale, setUsernameAvailbale] = useState(false); // staet to check if the username is available
-  const [formLoading, setFormLoading] = useState(false);
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [user, setUser] = useState({
     name: "",
@@ -54,7 +54,7 @@ const signup = () => {
       setMediaPreview(URL.createObjectURL(files[0]));
     }
   };
-  
+
   /********** HANDLE SUBMIT ***************/
   const handleSubmit = (e) => {
     e.preventDefault();
