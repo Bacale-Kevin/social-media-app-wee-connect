@@ -32,6 +32,7 @@ const signup = () => {
   const { name, email, password, bio } = user;
 
   const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/; //user to validate the username field by not accepting special characters
+  let cancel; // variable used to cancel pending api request
 
   /*******HANDLE IMAGE UPLOAD ******/
   const [media, setMedia] = useState(null);
@@ -60,11 +61,38 @@ const signup = () => {
     e.preventDefault();
   };
 
-  /******** USEFFECT *******/
+  /******** USEFFECT TO DISABLE SUBMIT BUTTON IF REQUIRE FIELDS ARE NOT ENTERED *******/
   useEffect(() => {
     const isUser = Object.values({ name, email, password, bio }).every((item) => Boolean(item)); //Convert object to array and return true if all the condition is fulfilled that is if all the fields in the object has a value
     isUser ? setSubmitDisabled(false) : setSubmitDisabled(true);
   }, [user]);
+
+  /******** FUNCTION TO CHECK IF USERNAME IS TAKEN *******/
+  const checkUsername = async () => {
+    setUsernameLoading(true);
+    try {
+      cancel && cancel(); //basically this cancel pending request and makes new request
+      const CancelToken = axios.CancelToken; //enables us cancel pending request in axios
+      const res = await axios.get(`${baseUrl}/api/signup/${username}`, {
+        cancelToken: new CancelToken((canceler) => {
+          cancel = canceler;
+        }),
+      });
+
+      if (res.data === "Available") {
+        setUsernameAvailbale(true);
+        setUser((prev) => ({ ...prev, username })); //set the available username in the state
+      }
+    } catch (error) {
+      setErrMsg("Username Not Availbable");
+    }
+    setUsernameLoading(false);
+  };
+
+  /******** USEFFECT TO HANDLE THE USERNAME FIELD *******/
+  useEffect(() => {
+    username === "" ? setUsernameAvailbale(false) : checkUsername(); //on every username input change this function is fired
+  }, [username]);
 
   return (
     <>

@@ -8,14 +8,14 @@ const FollowerModel = require("../models/FollowerModel");
 const ProfileModel = require("../models/ProfileModel");
 const UserModel = require("../models/UserModel");
 const userPng =
-  "https://res.cloudinary.com/indersingh/image/upload/v1593464618/App/user_mklcpl.png"; //default profile pic in case the user doesn't enter a picture
+  "https://cloudinary.com/console/c-9cb4901916f0a8986064e0c2401020/media_library/folders/00fa52c6394ec5ebea000db5dbcded3f8a"; //default profile pic in case the user doesn't enter a picture
 
 const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
 
 /********** Checks whether the username has been taken or not ***********/
 router.get("/:username", async (req, res) => {
   const { username } = req.params;
-
+  console.log(req.params);
   try {
     //validate length
     if (username.length < 1) return res.status(401).send("Invalid");
