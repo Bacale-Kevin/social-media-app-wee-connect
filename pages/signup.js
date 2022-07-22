@@ -6,6 +6,8 @@ import baseUrl from "../utils/baseUrl";
 import { HeaderMessage, FooterMessage } from "../components/common/WelcomeMessage";
 import CommonInputs from "../components/common/CommonInputs";
 import ImageDropDiv from "../components/common/ImageDropDiv";
+import { registerUser } from "../utils/authUser";
+import uploadPic from "../utils/uploadPicToCloudinary";
 
 const signup = () => {
   const [showSocialLinks, setShowSocialLinks] = useState(false);
@@ -57,8 +59,22 @@ const signup = () => {
   };
 
   /********** HANDLE SUBMIT ***************/
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormLoading(true);
+
+    let profilePicUrl;
+    if (media !== null) {
+      profilePicUrl = await uploadPic(media); //upload the pic to cloudinary
+    }
+
+    if (media !== null && !profilePicUrl) {
+      //which means there is still an error
+      setFormLoading(false);
+      return setErrMsg(`Error Uploading Image`);
+    }
+
+    await registerUser(user, profilePicUrl, setErrMsg, setFormLoading);
   };
 
   /******** USEFFECT TO DISABLE SUBMIT BUTTON IF REQUIRE FIELDS ARE NOT ENTERED *******/
@@ -79,12 +95,15 @@ const signup = () => {
         }),
       });
 
+      // if (errorMsg !== null) setErrMsg(null);
+
       if (res.data === "Available") {
         setUsernameAvailbale(true);
         setUser((prev) => ({ ...prev, username })); //set the available username in the state
       }
     } catch (error) {
       setErrMsg("Username Not Availbable");
+      setUsernameAvailbale(false);
     }
     setUsernameLoading(false);
   };
