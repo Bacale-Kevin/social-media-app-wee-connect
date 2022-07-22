@@ -15,7 +15,7 @@ const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
 /********** Checks whether the username has been taken or not ***********/
 router.get("/:username", async (req, res) => {
   const { username } = req.params;
-
+  console.log(req.params);
   try {
     //validate length
     if (username.length < 1) return res.status(401).send("Invalid");
