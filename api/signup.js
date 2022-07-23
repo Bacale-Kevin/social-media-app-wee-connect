@@ -8,14 +8,14 @@ const FollowerModel = require("../models/FollowerModel");
 const ProfileModel = require("../models/ProfileModel");
 const UserModel = require("../models/UserModel");
 const userPng =
-  "https://cloudinary.com/console/c-9cb4901916f0a8986064e0c2401020/media_library/folders/00fa52c6394ec5ebea000db5dbcded3f8a"; //default profile pic in case the user doesn't enter a picture
+  "https://res.cloudinary.com/bacale/image/upload/v1658491664/wee-connect/upload/user_default_l08jam.png"; //default profile pic in case the user doesn't enter a picture
 
 const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
 
 /********** Checks whether the username has been taken or not ***********/
 router.get("/:username", async (req, res) => {
   const { username } = req.params;
-  console.log(req.params);
+//   console.log(req.params);
   try {
     //validate length
     if (username.length < 1) return res.status(401).send("Invalid");
@@ -57,7 +57,7 @@ router.post("/", async (req, res) => {
       email: email.toLowerCase(),
       username: username.toLowerCase(),
       password,
-      profilePicUrl: req.body.profilePicUrl || userPng.at,
+      profilePicUrl: req.body.profilePicUrl || userPng,
     });
 
     user.password = await bcrypt.hash(password, 10);
@@ -91,7 +91,7 @@ router.post("/", async (req, res) => {
       (err, token) => {
         if (err) throw err;
 
-        res.status(200).json(token);
+        res.status(200).json(token); //only the token is send as a response to the frontend
       }
     );
   } catch (error) {
