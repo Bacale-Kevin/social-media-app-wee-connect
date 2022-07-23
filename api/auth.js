@@ -6,15 +6,16 @@ const isEmail = require("validator/lib/isEmail"); // to validate the email addre
 
 const UserModel = require("../models/UserModel");
 
-/********** Checks whether the username has been taken or not ***********/
+/********** Login User ***********/
 router.post("/", async (req, res) => {
-  const { email, passsword } = req.body;
+  const { email, password } = req.body.user;
 
   //validate fields
   if (!isEmail(email)) return res.status(401).send("Invalid Email");
 
-  //check invalid characters
-  if (password.length < 6) return res.status(401).send("Password must be atleast 6 characters");
+  if (password.length < 6) {
+    return res.status(401).send("Password must be atleast 6 characters");
+  }
 
   try {
     const user = await UserModel.findOne({ email: email.toLowerCase() }).select("+password"); // password not included when we search for a user
@@ -22,7 +23,8 @@ router.post("/", async (req, res) => {
     if (!user) return res.status(401).send("Invalid Credentials");
 
     //check if password is correct
-    const isPassword = await bcrypt.compare(passsword, user.passsword);
+    const isPassword = await bcrypt.compare(password, user.password);
+
     if (!isPassword) {
       return res.status(401).send("Invalid Credentials");
     }

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Form, Button, Message, Divider } from "semantic-ui-react";
-import baseUrl from "../utils/baseUrl";
 import axios from "axios";
+
+import baseUrl from "../utils/baseUrl";
 import { HeaderMessage, FooterMessage } from "../components/common/WelcomeMessage";
+import { loginUser } from "../utils/authUser";
 
 const login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,8 +26,10 @@ const login = () => {
   };
 
   /********** HANDLE SUBMIT ***************/
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    await loginUser(user, setErrMsg, setFormLoading);
   };
 
   /******** USEFFECT *******/
@@ -77,12 +81,7 @@ const login = () => {
         />
 
         <Divider hidden />
-        <Button
-          content="Login"
-          type="submit"
-          color="teal"
-          disabled={submitDisabled}
-        />
+        <Button content="Login" type="submit" color="teal" disabled={submitDisabled} />
 
         <Divider hidden />
         <Divider hidden />

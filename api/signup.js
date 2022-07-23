@@ -36,7 +36,6 @@ router.get("/:username", async (req, res) => {
 
 /********** Create New User ***********/
 router.post("/", async (req, res) => {
-    console.log('body --> ', req.body)
   const { name, email, password, username, bio, facebook, youtube, twitter, instagram } =
     req.body.user;
 
