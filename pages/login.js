@@ -39,7 +39,7 @@ const login = () => {
     isUser ? setSubmitDisabled(false) : setSubmitDisabled(true);
   }, [user]);
 
-  /******** GET EMAIL FROM THE COOKIE  *******/
+  /******** GET EMAIL FROM THE COOKIE AND AUTO FILL THE EMAIL FIELD  *******/
   useEffect(() => {
     document.title='welcome back'
     const userEmail = cookie.get('userEmail') //this is set when the user logout
