@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Form, Button, Message, Divider } from "semantic-ui-react";
 import axios from "axios";
+import cookie from 'js-cookie'
 
 import baseUrl from "../utils/baseUrl";
 import { HeaderMessage, FooterMessage } from "../components/common/WelcomeMessage";
@@ -37,6 +38,13 @@ const login = () => {
     const isUser = Object.values({ email, password }).every((item) => Boolean(item)); //Convert object to array and return true if all the condition is fulfilled that is if all the fields in the object has a value
     isUser ? setSubmitDisabled(false) : setSubmitDisabled(true);
   }, [user]);
+
+  /******** GET EMAIL FROM THE COOKIE  *******/
+  useEffect(() => {
+    document.title='welcome back'
+    const userEmail = cookie.get('userEmail') //this is set when the user logout
+    if(userEmail) setUser(prev => ({...prev, email: userEmail}))
+  }, []);
 
   return (
     <>
