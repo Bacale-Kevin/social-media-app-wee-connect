@@ -18,12 +18,6 @@ export const registerUser = async (user, profilePicUrl, setError, setFormLoading
   setFormLoading(false);
 };
 
-const setToken = (token) => {
-  cookie.set("token", token); //set the cookie
-
-  Router.push("/"); //navigate to the homepage
-};
-
 /********** LOGIN USER  *********/
 export const loginUser = async (user, setError, setFormLoading) => {
   setFormLoading(true);
@@ -33,9 +27,26 @@ export const loginUser = async (user, setError, setFormLoading) => {
 
     setToken(res.data);
   } catch (error) {
-    console.log('error --> ', error)
+    console.log("error --> ", error);
     const errorMsg = catchErrors(error);
     setError(errorMsg);
   }
   setFormLoading(false);
+};
+
+const setToken = (token) => {
+  cookie.set("token", token); //set the cookie
+  Router.push("/"); //navigate to the homepage
+};
+
+export const redirectUser = (ctx, location) => {
+  if (ctx.req) {
+    //remember the req object can only be received on the server
+    //which means the user in on server-side
+    ctx.res.writeHead(302, { Location: location });
+    ctx.res.end();
+  } else {
+    //the user is on client-side
+    Router.push(location);
+  }
 };

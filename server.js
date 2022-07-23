@@ -13,7 +13,6 @@ connectDb();
 nextApp.prepare().then(() => {
   // middleware
   app.use(express.json());
-  app.use(express.urlencoded());
 
   //handle our custom routes
   app.use("/api/signup", require("./api/signup"));
