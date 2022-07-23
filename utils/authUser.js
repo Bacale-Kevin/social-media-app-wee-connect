@@ -34,6 +34,14 @@ export const loginUser = async (user, setError, setFormLoading) => {
   setFormLoading(false);
 };
 
+export const logoutUser = (email) => {
+  cookie.set('userEmail', email) //this value is to auto populate the user email address in the login form email field
+  cookie.remove('token')
+
+  Router.reload('/login')
+  Router.push('/login')
+}
+
 const setToken = (token) => {
   cookie.set("token", token); //set the cookie
   Router.push("/"); //navigate to the homepage
