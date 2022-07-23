@@ -4,7 +4,25 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const isEmail = require("validator/lib/isEmail"); // to validate the email address
 
+const FollowerModel = require("../models/FollowerModel");
 const UserModel = require("../models/UserModel");
+const authMiddleware = require("../middleware/authMiddleware");
+
+/***** This routes gets the information of the authenticated user  *****/
+router.get("/", authMiddleware, async (req, res) => {
+  const { userId } = req;
+
+  try {
+    const user = await UserModel.findById(userId);
+
+    const userFollowStats = await FollowerModel.findOne({ user: userId });
+
+    return res.status(200).json({ user, userFollowStats });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(`Server error`);
+  }
+});
 
 /********** Login User ***********/
 router.post("/", async (req, res) => {
