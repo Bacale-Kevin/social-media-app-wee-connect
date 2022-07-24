@@ -92,4 +92,72 @@ router.delete("/:postId", authMiddleware, async (req, res) => {
   }
 });
 
+/***** LIKE A POST ******/
+router.post("/like/:postId", authMiddleware, async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { userId } = req;
+
+    const post = await PostModel.findById(postId);
+
+    if (!post) return res.status(404).send("Post not found");
+
+    //check if the post have already been like
+    const isLiked = post.likes.filter((like) => like.user.toString() === userId).length > 0;
+
+    if (isLiked) return res.status(401).send("Post already liked");
+
+    await post.likes.unshift({ user: userId });
+    await post.save();
+
+    return res.status(200).send("Post liked");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(`Server error`);
+  }
+});
+
+/***** UNLIKE A POST ******/
+router.put("/unlike/:postId", authMiddleware, async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { userId } = req;
+
+    const post = await PostModel.findById(postId);
+
+    if (!post) return res.status(404).send("Post not found");
+
+    //check if the post have already been unlike
+    const isLiked = post.likes.filter((like) => like.user.toString() === userId).length === 0;
+
+    if (isLiked) return res.status(401).send("Post not liked before");
+
+    const index = post.likes.map((like) => like.user.toString()).indexOf(userId);
+
+    await post.likes.splice(index, 1);
+    await post.save();
+
+    return res.status(200).send("Post unliked");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(`Server error`);
+  }
+});
+
+/***** GET ALL LIKES ******/
+router.get("/like/:postId", authMiddleware, async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    const post = await PostModel.findById(postId).populate("likes.user");
+
+    if (!post) return res.status(404).send("Post not found");
+
+    return res.status(200).json(post.likes);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(`Server error`);
+  }
+});
+
 module.exports = router;
