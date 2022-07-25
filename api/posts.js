@@ -39,7 +39,7 @@ router.get("/", authMiddleware, async (req, res) => {
       .populate("user")
       .populate("comments.user");
 
-    return res.status(200).json({ success: true, posts });
+    return res.status(200).json(posts);
   } catch (error) {
     console.log(error);
     return res.status(500).send(`Server error`);
