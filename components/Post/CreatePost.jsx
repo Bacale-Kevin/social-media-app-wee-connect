@@ -2,6 +2,8 @@ import React, { useState, useRef } from "react";
 import { Form, Button, Image, Divider, Message, Icon } from "semantic-ui-react";
 
 import uploadPic from "../../utils/uploadPicToCloudinary";
+import { submitNewPost } from "../../utils/postActions";
+
 
 const CreatePost = ({ user, setPosts }) => {
   const [newPost, setNewPost] = useState({
@@ -32,9 +34,27 @@ const CreatePost = ({ user, setPosts }) => {
     }
   };
 
-  /********** HANDLE CHANGE BOTH FOR FILES AND FIELDS **********/
-  const handleSubmit = (e) => {
+  /********** HANDLE SUBMIT **********/
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
+
+    let picUrl = '/javascript.png'
+    //handle ccloudinary upload
+    // if(media !== null){
+    //    picUrl = await uploadPic(media)
+    // }
+
+    // if(!picUrl){
+    //   setLoading(false) 
+    //   return setError('Error Uploading Image')
+    // }
+
+    await submitNewPost(user, newPost.text, newPost.location, picUrl, setPosts, setNewPost, setError)
+
+    setMedia(null)
+    setMediaPreview(null)
+    setLoading(false)
   };
 
   return (
@@ -85,6 +105,7 @@ const CreatePost = ({ user, setPosts }) => {
             cursor: "pointer",
             borderColor: highlighted ? "green" : "black",
           }}
+          onClick={() => inputRef.current.click()}
           onDragOver={(e) => {
             e.preventDefault();
             setHighlighted(true);
@@ -105,7 +126,7 @@ const CreatePost = ({ user, setPosts }) => {
         >
           {media === null ? (
             <>
-              <Icon name="plus" onClick={() => inputRef.current.click()} size="big" />
+              <Icon name="plus" size="big" />
             </>
           ) : (
             <>
