@@ -1,18 +1,63 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Segment } from "semantic-ui-react";
+import { parseCookies } from "nookies";
 
-const Index = ({ user, userFollowStats }) => {
-  console.log(user.name);
+import baseUrl from "../utils/baseUrl";
+import { NoPosts } from "../components/Layout/NoData";
+import CreatePost from "../components/Post/CreatePost";
+import CardPost from "../components/Post/CardPost";
+
+const Index = ({ user, postsData, errorLoading }) => {
+  
+  const [posts, setPosts] = useState(postsData);
+  const [showToast, setShowToast] = useState(false);
   /********** This is to change the name of the page **********/
   useEffect(() => {
     document.title = `welcome ${user.name.split(" ")[0]}`;
   }, []);
 
+  if (posts.length === 0 || errorLoading) return <NoPosts />;
+
   return (
-    <div>
-      {/* {posts && posts.length > 0 && posts.map((el) => <div key={el.title}>{el.title}</div>)} */}
-    </div>
+    <>
+      <Segment>
+        {/* create post is the form for creating the post */}
+        <CreatePost user={user} posts={posts} setPosts={setPosts} showToast={showToast} />
+
+        {posts.map((post) => (
+          <CardPost
+            key={post._id}
+            post={post}
+            user={user}
+            setPosts={setPosts}
+            setShowToast={setShowToast}
+          />
+        ))}
+      </Segment>
+    </>
   );
 };
+
+export async function getServerSideProps(ctx) {
+  try {
+    const { token } = parseCookies(ctx); //get the token its a protected route
+
+    const res = await axios.get(`${baseUrl}/api/posts`, { headers: { Authorization: token } });
+
+    return {
+      props: {
+        postsData: res.data,
+      },
+    };
+  } catch (error) {
+    console.log(error.message)
+    return {
+      props: {
+        errorLoading: true,
+      },
+    };
+  }
+}
 
 export default Index;
