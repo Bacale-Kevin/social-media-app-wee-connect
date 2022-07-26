@@ -7,9 +7,9 @@ import baseUrl from "../utils/baseUrl";
 import { NoPosts } from "../components/Layout/NoData";
 import CreatePost from "../components/Post/CreatePost";
 import CardPost from "../components/Post/CardPost";
+import { PostDeleteToastr } from "../components/Layout/Toastr";
 
 const Index = ({ user, postsData, errorLoading }) => {
-  
   const [posts, setPosts] = useState(postsData);
   const [showToast, setShowToast] = useState(false);
   /********** This is to change the name of the page **********/
@@ -17,13 +17,22 @@ const Index = ({ user, postsData, errorLoading }) => {
     document.title = `welcome ${user.name.split(" ")[0]}`;
   }, []);
 
+  /********** This is handle toast notification **********/
+  useEffect(() => {
+    showToast &&
+      setTimeout(() => {
+        return setShowToast(false);
+      }, 3000);
+  }, [showToast]);
+
   if (posts.length === 0 || errorLoading) return <NoPosts />;
 
   return (
     <>
+      {showToast && <PostDeleteToastr />}
       <Segment>
         {/* create post is the form for creating the post */}
-        <CreatePost user={user} posts={posts} setPosts={setPosts} showToast={showToast} />
+        <CreatePost user={user} setPosts={setPosts} showToast={showToast} />
 
         {posts.map((post) => (
           <CardPost
@@ -51,7 +60,7 @@ export async function getServerSideProps(ctx) {
       },
     };
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
     return {
       props: {
         errorLoading: true,

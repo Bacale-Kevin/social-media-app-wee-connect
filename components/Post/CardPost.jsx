@@ -15,6 +15,7 @@ import Link from "next/link";
 import PostComments from "./PostComments";
 import CommentInputField from "./CommentInputField";
 import calculateTime from "../../utils/calculateTime";
+import { deletePost } from "../../utils/postActions";
 
 const CardPost = ({ user, post, setPosts, setShowToast }) => {
   const [likes, setLikes] = useState(post.likes);
@@ -59,7 +60,7 @@ const CardPost = ({ user, post, setPosts, setShowToast }) => {
                     <Header as="h4" content="Are you sure?" />
                     <p>This action is irrevesivible</p>
 
-                    <Button color="red" icon="trash" content="Delete" />
+                    <Button color="red" icon="trash" content="Delete" onClick={() => deletePost(post._id, setPosts, setShowToast )} />
                   </Popup>
                 </>
               ))}
