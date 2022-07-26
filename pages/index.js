@@ -50,32 +50,33 @@ const Index = ({ user, postsData, errorLoading }) => {
       }, 3000);
   }, [showToast]);
 
-  if (posts.length === 0 || errorLoading) return <NoPosts />;
-
   return (
     <>
       {showToast && <PostDeleteToastr />}
       <Segment>
         {/* create post is the form for creating the post */}
         <CreatePost user={user} setPosts={setPosts} showToast={showToast} />
-
-        <InfiniteScroll
-          hasMore={hasMore}
-          next={fetchDataOnScroll} // handler to load more post
-          loader={<PlaceHolderPosts />} //loading indicator
-          endMessage={<EndMessage />} //end message when there are no more post
-          dataLength={posts.length}
-        >
-          {posts.map((post) => (
-            <CardPost
-              key={post._id}
-              post={post}
-              user={user}
-              setPosts={setPosts}
-              setShowToast={setShowToast}
-            />
-          ))}
-        </InfiniteScroll>
+        {posts.length === 0 || errorLoading ? (
+          <NoPosts />
+        ) : (
+          <InfiniteScroll
+            hasMore={hasMore}
+            next={fetchDataOnScroll} // handler to load more post
+            loader={<PlaceHolderPosts />} //loading indicator
+            endMessage={<EndMessage />} //end message when there are no more post
+            dataLength={posts.length}
+          >
+            {posts.map((post) => (
+              <CardPost
+                key={post._id}
+                post={post}
+                user={user}
+                setPosts={setPosts}
+                setShowToast={setShowToast}
+              />
+            ))}
+          </InfiniteScroll>
+        )}
       </Segment>
     </>
   );
@@ -87,7 +88,7 @@ export async function getServerSideProps(ctx) {
 
     const res = await axios.get(`${baseUrl}/api/posts`, {
       headers: { Authorization: token },
-      params: { pageNumber: 1 }, // initially the pagenumber is set to one 
+      params: { pageNumber: 1 }, // initially the pagenumber is set to one
     });
 
     return {
