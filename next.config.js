@@ -1,6 +1,5 @@
 module.exports = {
   env: {
-    CLOUDINARY_URL:
-      "https://res.cloudinary.com/bacale/image/upload/v1658491664/wee-connect/upload",
+    CLOUDINARY_URL: " https://api.cloudinary.com/v1_1/bacale/image/upload",
   },
 };
