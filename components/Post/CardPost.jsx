@@ -17,6 +17,8 @@ import CommentInputField from "./CommentInputField";
 import calculateTime from "../../utils/calculateTime";
 import { deletePost, likePost } from "../../utils/postActions";
 import LikeList from "./LikeList";
+import ImageModal from "./ImageModal";
+import NoImageModal from "./NoImageModal";
 
 const CardPost = ({ user, post, setPosts, setShowToast }) => {
   const [likes, setLikes] = useState(post.likes);
@@ -24,8 +26,25 @@ const CardPost = ({ user, post, setPosts, setShowToast }) => {
   const [error, setError] = useState(null);
   const isLiked = likes.length > 0 && likes.filter((like) => like.user === user._id).length > 0;
 
+  //state to show and close the modal
+  const [showModal, setShowModal] = useState(false);
+
+  //ImageModal and NoImageModel share the same props so lets distribute their those props dynamically
+  const addPropsToModal = () => ({ post, user, setLikes, likes, isLiked, comments, setComments });
+
   return (
     <>
+      {showModal && (
+        <Modal open={showModal} closeIcon closeOnDimmerClick onClose={() => setShowModal(false)}>
+          <Modal.Content>
+            {post.picUrl ? (
+              <ImageModal {...addPropsToModal()} />
+            ) : (
+              <NoImageModal {...addPropsToModal()} />
+            )}
+          </Modal.Content>
+        </Modal>
+      )}
       <Segment basic>
         <Card color="teal" fluid>
           {post.picUrl && (
@@ -36,6 +55,7 @@ const CardPost = ({ user, post, setPosts, setShowToast }) => {
               wrapped
               ui={false}
               alt="PostImage"
+              onClick={() => setShowModal(true)}
             />
           )}
 
@@ -124,7 +144,13 @@ const CardPost = ({ user, post, setPosts, setShowToast }) => {
               )}
 
             {comments.length > 3 && (
-              <Button content="View More" color="teal" basic circular onClick={{}} />
+              <Button
+                content="View More"
+                color="teal"
+                basic
+                circular
+                onClick={() => setShowModal(true)}
+              />
             )}
 
             <Divider hidden />
