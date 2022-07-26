@@ -10,6 +10,8 @@ const Axios = axios.create({
   headers: { Authorization: cookie.get("token") },
 });
 
+/**After any POST DELETE or PUT request we always need to setPost in other to refresh the list*/
+
 export const submitNewPost = async (text, location, picUrl, setPosts, setNewPost, setError) => {
   try {
     const res = await Axios.post("/", { text, location, picUrl });
@@ -24,12 +26,29 @@ export const submitNewPost = async (text, location, picUrl, setPosts, setNewPost
 
 export const deletePost = async (postId, setPosts, setShowToast) => {
   try {
-    await Axios.delete(`${postId}`)
-    setPosts(prev => prev.filter(post => post._id !== postId))
-    setShowToast(true)
+    await Axios.delete(`${postId}`);
+    setPosts((prev) => prev.filter((post) => post._id !== postId));
+    setShowToast(true);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     const errorMsg = catchErrors(error);
     setError(errorMsg);
   }
-}
+};
+
+export const likePost = async (postId, userId, setLikes, like = true) => {
+  try {
+    if (like) {
+      await Axios.post(`.like/${postId}`);
+      setLikes((prev) => [...prev, { user: userId }]); //in the model the likes takes one field user which is the id of the user liking the post
+    } else if (!like) {
+      //which means the user wants to unlike the post
+      await Axios.put(`/unlike/${postId}`);
+      setLikes((prev) => prev.filter((like) => like.user !== userId));
+    }
+  } catch (error) {
+    console.log(error);
+    const errorMsg = catchErrors(error);
+    setError(errorMsg);
+  }
+};
