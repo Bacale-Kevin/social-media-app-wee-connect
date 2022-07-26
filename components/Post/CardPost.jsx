@@ -16,6 +16,7 @@ import PostComments from "./PostComments";
 import CommentInputField from "./CommentInputField";
 import calculateTime from "../../utils/calculateTime";
 import { deletePost, likePost } from "../../utils/postActions";
+import LikeList from "./LikeList";
 
 const CardPost = ({ user, post, setPosts, setShowToast }) => {
   const [likes, setLikes] = useState(post.likes);
@@ -95,11 +96,16 @@ const CardPost = ({ user, post, setPosts, setShowToast }) => {
               onClick={() => likePost(post._id, user._id, setLikes, isLiked ? false : true)}
             />
 
-            {likes.length > 0 && (
-              <span className="spanlikesList">
-                {`${likes.length} ${likes.length === 1 ? "like" : "likes"}`}
-              </span>
-            )}
+            <LikeList
+              postId={post._id}
+              trigger={
+                likes.length > 0 && (
+                  <span className="spanlikesList">
+                    {`${likes.length} ${likes.length === 1 ? "like" : "likes"}`}
+                  </span>
+                )
+              }
+            />
 
             <Icon name="comment outline" style={{ marginLeft: "7px" }} color="blue" />
 
