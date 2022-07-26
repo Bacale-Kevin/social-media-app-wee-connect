@@ -23,8 +23,8 @@ export const submitNewPost = async (
 
     
 
-    setPosts((prev) => [res.data, ...prev]);
-    setNewPost({ text: "", location: "" });
+    setPosts((prev) => [res.data, ...prev]); //this is what makes the list of posts to be updated when a post is created
+    setNewPost({ text: "", location: "" }); // reset values after submit
   } catch (error) {
     const errorMsg = catchErrors(error);
     setError(errorMsg);

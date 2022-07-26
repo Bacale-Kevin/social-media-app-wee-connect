@@ -23,7 +23,7 @@ const Index = ({ user, postsData, errorLoading }) => {
     <>
       <Segment>
         {/* create post is the form for creating the post */}
-        <CreatePost user={user} posts={posts} setPosts={setPosts} showToast={showToast} />
+        <CreatePost user={user} setPosts={setPosts} showToast={showToast} />
 
         {posts.map((post) => (
           <CardPost
