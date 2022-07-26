@@ -1,3 +1,4 @@
+import "react-toastify/dist/ReactToastify.css";
 import "semantic-ui-css/semantic.min.css";
 import { parseCookies, destroyCookie } from "nookies"; //use to retrieve cookies in the server (nextjs)
 import axios from "axios";

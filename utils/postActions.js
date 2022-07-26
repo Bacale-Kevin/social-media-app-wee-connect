@@ -10,18 +10,9 @@ const Axios = axios.create({
   headers: { Authorization: cookie.get("token") },
 });
 
-export const submitNewPost = async (
-  text,
-  location,
-  picUrl,
-  setPosts,
-  setNewPost,
-  setError
-) => {
+export const submitNewPost = async (text, location, picUrl, setPosts, setNewPost, setError) => {
   try {
     const res = await Axios.post("/", { text, location, picUrl });
-
-    
 
     setPosts((prev) => [res.data, ...prev]); //this is what makes the list of posts to be updated when a post is created
     setNewPost({ text: "", location: "" }); // reset values after submit
@@ -30,3 +21,15 @@ export const submitNewPost = async (
     setError(errorMsg);
   }
 };
+
+export const deletePost = async (postId, setPosts, setShowToast) => {
+  try {
+    await Axios.delete(`${postId}`)
+    setPosts(prev => prev.filter(post => post._id !== postId))
+    setShowToast(true)
+  } catch (error) {
+    console.log(error)
+    const errorMsg = catchErrors(error);
+    setError(errorMsg);
+  }
+}
