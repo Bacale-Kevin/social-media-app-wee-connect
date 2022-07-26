@@ -173,21 +173,23 @@ router.post("/comment/:postId", authMiddleware, async (req, res) => {
     if (text.length < 1)
       return res.status(401).send("comment should be atleast one character long");
 
-    const post = await PostModel.findById(postId);
+    const post = await PostModel.findById(postId).populate('comments.user');
 
+    
     if (!post) return res.status(404).send("Post not found");
-
+    
     const newComment = {
       _id: uuid(),
       text,
       user: userId,
       date: Date.now(),
     };
-
+    
     post.comments.unshift(newComment);
 
+    
     await post.save();
-
+    
     return res.status(200).json(newComment._id);
   } catch (error) {
     console.log(error);
