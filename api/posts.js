@@ -24,7 +24,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
     const post = await new PostModel(newPost).save();
 
-    const postCreated = await PostModel.findById(post._id).populate('user')
+    const postCreated = await PostModel.findById(post._id).populate("user");
 
     return res.json(postCreated);
   } catch (error) {
@@ -35,11 +35,28 @@ router.post("/", authMiddleware, async (req, res) => {
 
 /***** GET  POSTS  ******/
 router.get("/", authMiddleware, async (req, res) => {
+  const { pageNumber } = req.query;
+  const number = Number(pageNumber);
+  const size = 8;
+
   try {
-    const posts = await PostModel.find()
-      .sort({ createdAt: -1 })
-      .populate("user")
-      .populate("comments.user");
+    let posts;
+
+    if (number === 1) {
+      posts = await PostModel.find()
+        .limit(size) //by default only eight post will be send
+        .sort({ createdAt: -1 })
+        .populate("user")
+        .populate("comments.user");
+    } else {
+      const skips = size * (number - 1); // this is to skip over previously send post
+      posts = await PostModel.find()
+        .skip(skips)
+        .limit(size)
+        .sort({ createdAt: -1 })
+        .populate("user")
+        .populate("comments.user");
+    }
 
     return res.status(200).json(posts);
   } catch (error) {
@@ -173,23 +190,21 @@ router.post("/comment/:postId", authMiddleware, async (req, res) => {
     if (text.length < 1)
       return res.status(401).send("comment should be atleast one character long");
 
-    const post = await PostModel.findById(postId).populate('comments.user');
+    const post = await PostModel.findById(postId).populate("comments.user");
 
-    
     if (!post) return res.status(404).send("Post not found");
-    
+
     const newComment = {
       _id: uuid(),
       text,
       user: userId,
       date: Date.now(),
     };
-    
+
     post.comments.unshift(newComment);
 
-    
     await post.save();
-    
+
     return res.status(200).json(newComment._id);
   } catch (error) {
     console.log(error);
