@@ -168,17 +168,18 @@ router.post("/update", authMiddleware, async (req, res) => {
   const { userId } = req;
   const { bio, facebook, youtube, twitter, instagram, profilePicUrl } = req.body;
   try {
-    let profileFields = {};
-
-    profileFields.user = userId;
-
-    profileFields.bio = bio;
-
-    if (facebook) profileFields.social.facebook = facebook;
-    if (youtube) profileFields.social.youtube = youtube;
-    if (instagram) profileFields.social.instagram = instagram;
-    if (twitter) profileFields.social.twitter = twitter;
-
+      let profileFields = {};
+      
+      profileFields.user = userId;
+      
+      profileFields.bio = bio;
+      
+      if (facebook) profileFields.social.facebook = facebook;
+      if (youtube) profileFields.social.youtube = youtube;
+      if (instagram) profileFields.social.instagram = instagram;
+      if (twitter) profileFields.social.twitter = twitter;
+      console.log("TWIITER --> ", profileFields.social.twitter);
+      
     await ProfileModel.findByIdAndUpdate({ user: userId }, { $set: profileFields }, { new: true });
 
     if (profilePicUrl) {

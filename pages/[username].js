@@ -14,6 +14,7 @@ import CardPost from "../components/Post/CardPost";
 import { PostDeleteToastr } from "../components/Layout/Toastr";
 import Followers from "../components/Profile/Followers";
 import Following from "../components/Profile/Following";
+import UpdateProfile from "../components/Profile/UpdateProfile";
 
 const ProfilePage = ({ user, profile, followersLength, followingLength, errorLoading, userFollowStats }) => {
   const router = useRouter();
@@ -94,6 +95,7 @@ const ProfilePage = ({ user, profile, followersLength, followingLength, errorLoa
               </>
             )}
 
+            {/* show the follower tab content */}
             {activeItem === "followers" && (
               <Followers
                 user={user}
@@ -103,6 +105,7 @@ const ProfilePage = ({ user, profile, followersLength, followingLength, errorLoa
               />
             )}
 
+            {/* show the following tab content */}
             {activeItem === "following" && (
               <Following
                 user={user}
@@ -111,6 +114,9 @@ const ProfilePage = ({ user, profile, followersLength, followingLength, errorLoa
                 profileUserId={profile.user._id}
               />
             )}
+
+            {/* show the following tab content */}
+            {activeItem === "updateProfile" && <UpdateProfile Profile={profile}  />}
           </Grid.Column>
         </Grid.Row>
       </Grid>
