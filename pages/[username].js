@@ -12,6 +12,8 @@ import ProfileHeader from "../components/Profile/ProfileHeader";
 import { PlaceHolderPosts } from "../components/Layout/PlaceHolderGroup";
 import CardPost from "../components/Post/CardPost";
 import { PostDeleteToastr } from "../components/Layout/Toastr";
+import Followers from "../components/Profile/Followers";
+import Following from "../components/Profile/Following";
 
 const ProfilePage = ({ user, profile, followersLength, followingLength, errorLoading, userFollowStats }) => {
   const router = useRouter();
@@ -83,13 +85,31 @@ const ProfilePage = ({ user, profile, followersLength, followingLength, errorLoa
                 {loading ? (
                   <PlaceHolderPosts />
                 ) : posts.length > 0 ? (
-                  posts.map((post) => (
-                    <CardPost key={post._id} post={post} user={user} setPosts={setPosts} setShowToast={setShowToast} />
+                  posts.map((post, i) => (
+                    <CardPost key={i} post={post} user={user} setPosts={setPosts} setShowToast={setShowToast} />
                   ))
                 ) : (
                   <NoProfilePosts />
                 )}
               </>
+            )}
+
+            {activeItem === "followers" && (
+              <Followers
+                user={user}
+                loggedUserFollowStats={LoggedUserFollowStats}
+                setUserFollowStats={setUserFollowStats}
+                profileUserId={profile.user._id}
+              />
+            )}
+
+            {activeItem === "following" && (
+              <Following
+                user={user}
+                loggedUserFollowStats={LoggedUserFollowStats}
+                setUserFollowStats={setUserFollowStats}
+                profileUserId={profile.user._id}
+              />
             )}
           </Grid.Column>
         </Grid.Row>
