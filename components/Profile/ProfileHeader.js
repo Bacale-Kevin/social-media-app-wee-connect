@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Segment, Grid, Image, Divider, Header, Button, List } from "semantic-ui-react";
 
+import { followUser, unfollowUser } from "../../utils/profileActions";
+
 const ProfileHeader = ({ profile, ownAccount, LoggedUserFollowStats, setUserFollowStats }) => {
   const [loading, setLoading] = useState(false);
 
@@ -24,44 +26,42 @@ const ProfileHeader = ({ profile, ownAccount, LoggedUserFollowStats, setUserFoll
 
             <Grid.Row>
               {profile.social ? (
-                <>
-                  <List>
+                <List>
+                  <List.Item>
+                    <List.Icon name="mail" />
+                    <List.Content content={profile.user.email} />
+                  </List.Item>
+
+                  {profile.social.facebook && (
                     <List.Item>
-                      <List.Icon name="mail" />
-                      <List.Content content={profile.user.email} />
+                      <List.Icon name="facebook" color="blue" />
+                      <List.Content style={{ color: "blue" }} content={profile.social.facebook} />
                     </List.Item>
+                  )}
 
-                    {profile.social.facebook && (
-                      <List.Item>
-                        <List.Icon name="facebook" color="blue" />
-                        <List.Content content={profile.social.facebook} style={{ color: "blue" }} />
-                      </List.Item>
-                    )}
+                  {profile.social.instagram && (
+                    <List.Item>
+                      <List.Icon name="instagram" color="red" />
+                      <List.Content style={{ color: "blue" }} content={profile.social.instagram} />
+                    </List.Item>
+                  )}
 
-                    {profile.social.instagram && (
-                      <List.Item>
-                        <List.Icon name="instagram" color="red" />
-                        <List.Content content={profile.social.instagram} style={{ color: "red " }} />
-                      </List.Item>
-                    )}
+                  {profile.social.youtube && (
+                    <List.Item>
+                      <List.Icon name="youtube" color="red" />
+                      <List.Content style={{ color: "blue" }} content={profile.social.youtube} />
+                    </List.Item>
+                  )}
 
-                    {profile.social.youtube && (
-                      <List.Item>
-                        <List.Icon name="youtube" color="blue" />
-                        <List.Content content={profile.social.youtube} style={{ color: "blue" }} />
-                      </List.Item>
-                    )}
-
-                    {profile.social.twitter && (
-                      <List.Item>
-                        <List.Icon name="twitter" color="blue" />
-                        <List.Content content={profile.social.twitter} style={{ color: "blue" }} />
-                      </List.Item>
-                    )}
-                  </List>
-                </>
+                  {profile.social.twitter && (
+                    <List.Item>
+                      <List.Icon name="twitter" color="blue" />
+                      <List.Content style={{ color: "blue" }} content={profile.social.twitter} />
+                    </List.Item>
+                  )}
+                </List>
               ) : (
-                <>No Social Media Links</>
+                <>No Social Media Links </>
               )}
             </Grid.Row>
           </Grid.Column>
@@ -80,6 +80,13 @@ const ProfileHeader = ({ profile, ownAccount, LoggedUserFollowStats, setUserFoll
                 content={isFollowing ? "Following" : "Follow"}
                 icon={isFollowing ? "check circle" : "add user"}
                 color={isFollowing ? "instagram" : "twitter"}
+                onClick={async () => {
+                  setLoading(true);
+                  isFollowing
+                    ? await unfollowUser(profile.user._id, setUserFollowStats)
+                    : await followUser(profile.user._id, setUserFollowStats);
+                  setLoading(false);
+                }}
               />
             )}
           </Grid.Column>

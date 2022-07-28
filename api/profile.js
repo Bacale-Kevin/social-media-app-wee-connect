@@ -23,11 +23,9 @@ router.get("/:username", authMiddleware, async (req, res) => {
     return res.json({
       profile,
 
-      followersLength:
-        profileFollowStats.followers.length > 0 ? profileFollowStats.followers.length : 0,
+      followersLength: profileFollowStats.followers.length > 0 ? profileFollowStats.followers.length : 0,
 
-      followingLength:
-        profileFollowStats.following.length > 0 ? profileFollowStats.following.length : 0,
+      followingLength: profileFollowStats.following.length > 0 ? profileFollowStats.following.length : 0,
     });
   } catch (error) {
     console.log(error);
@@ -44,10 +42,7 @@ router.get("/posts/:username", authMiddleware, async (req, res) => {
 
     if (!user) return res.status(404).send(`User not found`);
 
-    const posts = await PostModel.find({ user: user._id })
-      .sort({ createdAt: -1 })
-      .populate("user")
-      .populate("comments.user");
+    const posts = await PostModel.find({ user: user._id }).sort({ createdAt: -1 }).populate("user").populate("comments.user");
 
     if (!posts) return res.status(404).send(`Post not found`);
 
@@ -107,8 +102,7 @@ router.post("/follow/:userToFollowId", authMiddleware, async (req, res) => {
 
     //check if the user has not already follow the other user before
     const isFollowing =
-      user.following.length > 0 &&
-      user.following.filter((following) => following.user.toString() === userToFollowId).length > 0;
+      user.following.length > 0 && user.following.filter((following) => following.user.toString() === userToFollowId).length > 0;
 
     if (isFollowing) return res.status(401).send("User already followed");
 
@@ -144,24 +138,18 @@ router.put("/unfollow/:userToUnfollowId", authMiddleware, async (req, res) => {
     }
 
     const isFollowing =
-      user.following.length > 0 &&
-      user.following.filter((following) => following.user.toString() === userToUnfollowId)
-        .length === 0;
+      user.following.length > 0 && user.following.filter((following) => following.user.toString() === userToUnfollowId).length === 0;
 
     if (isFollowing) {
       return res.status(401).send("User Not Followed before");
     }
 
-    const removeFollowing = await user.following
-      .map((following) => following.user.toString())
-      .indexOf(userToUnfollowId);
+    const removeFollowing = await user.following.map((following) => following.user.toString()).indexOf(userToUnfollowId);
 
     await user.following.splice(removeFollowing, 1);
     await user.save();
 
-    const removeFollower = await userToUnfollow.followers
-      .map((follower) => follower.user.toString())
-      .indexOf(userId);
+    const removeFollower = await userToUnfollow.followers.map((follower) => follower.user.toString()).indexOf(userId);
 
     await userToUnfollow.followers.splice(removeFollower, 1);
     await userToUnfollow.save();
@@ -211,8 +199,7 @@ router.post("/settings/password", authMiddleware, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const { userId } = req;
   try {
-    if (newPassword.length < 6)
-      return res.status(401).send(`Password must be atleast 6 characters`);
+    if (newPassword.length < 6) return res.status(401).send(`Password must be atleast 6 characters`);
 
     const user = await UserModel.findById(userId).select("+password");
 

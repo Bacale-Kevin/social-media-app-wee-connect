@@ -1,8 +1,6 @@
 import axios from "axios";
 
-
 const uploadPic = async (media) => {
-  
   try {
     const form = new FormData();
     form.append("file", media);
@@ -11,7 +9,6 @@ const uploadPic = async (media) => {
 
     const res = await axios.post(process.env.CLOUDINARY_URL, form);
 
-    
     return res.data.url;
   } catch (error) {
     console.log(error);

@@ -42,11 +42,11 @@ const CreatePost = ({ user, setPosts }) => {
     if (media !== null) {
       picUrl = await uploadPic(media);
     }
-
-    if (!picUrl) {
-      setLoading(false);
-      return setError("Error Uploading Image");
-    }
+    // console.log('PICURL --> ', picUrl)
+    // if (!picUrl) {
+    //   setLoading(false);
+    //   return setError("Error Uploading Image/ Make Sure File Is Below 10MB");
+    // }
 
     await submitNewPost(
       newPost.text,
