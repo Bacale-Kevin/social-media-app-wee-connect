@@ -60,7 +60,9 @@ const SearchComponent = () => {
       results={results}
       onSearchChange={handleChange}
       minCharacters={1}
-      onResultSelect={(e, data) => Router.push(`/${data.result.username}`)}
+      onResultSelect={(e, data) => {
+        return Router.push(`/${data?.result?.username}`);
+      }}
     />
   );
 };
