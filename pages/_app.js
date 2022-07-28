@@ -21,7 +21,8 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
 
   let pageProps = {};
 
-  const protectedRoutes = ctx.pathname === "/";
+  //all the application protected routes goes here
+  const protectedRoutes = ctx.pathname === "/" || ctx.pathname === "/[username]";
 
   if (!token) {
     //if user is not logged in redirect to logn route
@@ -38,8 +39,8 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
 
       if (user) !protectedRoutes && redirectUser(ctx, "/"); //the login user should not access the login and signup page
 
-      pageProps.user = user;
-      pageProps.userFollowStats = userFollowStats;
+      pageProps.user = user; //user will be availble on all the pages
+      pageProps.userFollowStats = userFollowStats; //same as the userFollowStat
     } catch (error) {
       console.log("error --> ", error);
       destroyCookie(ctx, "token"); //any error destry the cookie and redirect to the login page
