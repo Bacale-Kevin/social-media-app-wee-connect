@@ -175,4 +175,83 @@ router.put("/unfollow/:userToUnfollowId", authMiddleware, async (req, res) => {
   }
 });
 
+/***** UPDATE PROFIL *****/
+router.post("/update", authMiddleware, async (req, res) => {
+  const { userId } = req;
+  const { bio, facebook, youtube, twitter, instagram, profilePicUrl } = req.body;
+  try {
+    let profileFields = {};
+
+    profileFields.user = userId;
+
+    profileFields.bio = bio;
+
+    if (facebook) profileFields.social.facebook = facebook;
+    if (youtube) profileFields.social.youtube = youtube;
+    if (instagram) profileFields.social.instagram = instagram;
+    if (twitter) profileFields.social.twitter = twitter;
+
+    await ProfileModel.findByIdAndUpdate({ user: userId }, { $set: profileFields }, { new: true });
+
+    if (profilePicUrl) {
+      const user = await UserModel.findById(userId);
+      user.profilePicUrl = profilePicUrl;
+      await user.save();
+    }
+
+    res.status(200).send("Success");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("server error");
+  }
+});
+
+/***** UPDATE PASSWORD *****/
+router.post("/settings/password", authMiddleware, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const { userId } = req;
+  try {
+    if (newPassword.length < 6)
+      return res.status(401).send(`Password must be atleast 6 characters`);
+
+    const user = await UserModel.findById(userId).select("+password");
+
+    const isPassword = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isPassword) return res.status(401).send(`Invalid Password`);
+
+    user.password = await bcrypt.hash(newPassword, 10);
+
+    await user.save();
+
+    return res.status(200).send("Success");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("server error");
+  }
+});
+
+/***** UPDATE MESSAGE POPUP SETTING *****/
+router.post("/settings/messagePopup", authMiddleware, async (req, res) => {
+  const { userId } = req;
+  try {
+    const user = await UserModel.findById(userId);
+
+    if (user.newMessagePopup) {
+      user.newMessagePopup = false;
+
+      await user.save();
+    } else {
+      user.newMessagePopup = true;
+
+      await user.save();
+    }
+
+    return res.status(200).send("Success");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("server error");
+  }
+});
+
 module.exports = router;
