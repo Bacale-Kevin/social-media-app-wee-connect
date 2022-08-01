@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcryptjs");
 
 const authMiddleware = require("../middleware/authMiddleware");
 const FollowerModel = require("../models/FollowerModel");
@@ -214,7 +215,7 @@ router.post("/settings/password", authMiddleware, async (req, res) => {
 
     await user.save();
 
-    return res.status(200).send("Success");
+    return res.status(200).send("Updated");
   } catch (error) {
     console.error(error);
     res.status(500).send("server error");

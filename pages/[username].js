@@ -15,6 +15,7 @@ import { PostDeleteToastr } from "../components/Layout/Toastr";
 import Followers from "../components/Profile/Followers";
 import Following from "../components/Profile/Following";
 import UpdateProfile from "../components/Profile/UpdateProfile";
+import Settings from "../components/Profile/Settings";
 
 const ProfilePage = ({ user, profile, followersLength, followingLength, errorLoading, userFollowStats }) => {
   const router = useRouter();
@@ -116,7 +117,9 @@ const ProfilePage = ({ user, profile, followersLength, followingLength, errorLoa
             )}
 
             {/* show the following tab content */}
-            {activeItem === "updateProfile" && <UpdateProfile Profile={profile}  />}
+            {activeItem === "updateProfile" && <UpdateProfile Profile={profile} />}
+            {/* show the settings tab content */}
+            {activeItem === "settings" && <Settings newMessagePopup={user.newMessagePopup} />}
           </Grid.Column>
         </Grid.Row>
       </Grid>
