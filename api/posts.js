@@ -38,27 +38,72 @@ router.get("/", authMiddleware, async (req, res) => {
   const { pageNumber } = req.query;
   const number = Number(pageNumber);
   const size = 8;
+  const { userId } = req;
 
   try {
-    let posts;
+    /***** GET THE POSTS OF ONLY THE USERS I'M FOLLOWING OR MY OWN POST ******/
+    const loggedUser = await FollowerModel.findOne({ user: userId }).select("-followers"); //we only the need the following data
+
+    let posts = [];
 
     if (number === 1) {
-      posts = await PostModel.find()
-        .limit(size) //by default only eight post will be send
-        .sort({ createdAt: -1 })
-        .populate("user")
-        .populate("comments.user");
+      if (loggedUser.following.length > 0) {
+        posts = await PostModel.find({ user: { $in: [userId, ...loggedUser.following.map((following) => following.user)] } }) //$in is like an OR condition return this or that
+          .limit(size)
+          .sort({ createdAt: -1 })
+          .populate("user")
+          .populate("comments.user");
+      } else {
+        //return the post of the loggedin user
+        posts = await PostModel.find({ user: userId })
+          .limit(size)
+          .sort({ createdAt: -1 })
+          .populate("user")
+          .populate("comments.user");
+      }
     } else {
-      const skips = size * (number - 1); // this is to skip over previously send post
-      posts = await PostModel.find()
-        .skip(skips)
-        .limit(size)
-        .sort({ createdAt: -1 })
-        .populate("user")
-        .populate("comments.user");
+      const skips = size * (number - 1); // this is to skip over previously send posts
+
+      if (loggedUser.following.length > 0) {
+        posts = await PostModel.find({ user: { $in: [userId, ...loggedUser.following.map((following) => following.user)] } }) //$in is like an OR condition return this or that
+          .skip(skips)
+          .limit(size)
+          .sort({ createdAt: -1 })
+          .populate("user")
+          .populate("comments.user");
+      } else {
+        //return the post of the loggedin user
+        posts = await PostModel.find({ user: userId })
+          .skip(skips)
+          .limit(size)
+          .sort({ createdAt: -1 })
+          .populate("user")
+          .populate("comments.user");
+      }
     }
 
-    return res.status(200).json(posts);
+    return res.json(posts);
+
+    /****** OLD CODE TO GET ALL THE POSTS *****/
+    // let posts;
+
+    // if (number === 1) {
+    //   posts = await PostModel.find()
+    //     .limit(size) //by default only eight post will be send
+    //     .sort({ createdAt: -1 })
+    //     .populate("user")
+    //     .populate("comments.user");
+    // } else {
+    //   const skips = size * (number - 1); // this is to skip over previously send post
+    //   posts = await PostModel.find()
+    //     .skip(skips)
+    //     .limit(size)
+    //     .sort({ createdAt: -1 })
+    //     .populate("user")
+    //     .populate("comments.user");
+    // }
+
+    // return res.status(200).json(posts);
   } catch (error) {
     console.log(error);
     return res.status(500).send(`Server error`);
@@ -187,8 +232,7 @@ router.post("/comment/:postId", authMiddleware, async (req, res) => {
     const { userId } = req;
     const { text } = req.body;
 
-    if (text.length < 1)
-      return res.status(401).send("comment should be atleast one character long");
+    if (text.length < 1) return res.status(401).send("comment should be atleast one character long");
 
     const post = await PostModel.findById(postId).populate("comments.user");
 
