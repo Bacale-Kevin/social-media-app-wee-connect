@@ -6,6 +6,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const FollowerModel = require("../models/FollowerModel");
 const PostModel = require("../models/PostModel");
 const UserModel = require("../models/UserModel");
+const { newLikeNotification, removeLikeNotification } = require("../utilsServer/notifcationActions");
 
 /***** Create A POST ******/
 router.post("/", authMiddleware, async (req, res) => {
@@ -48,7 +49,9 @@ router.get("/", authMiddleware, async (req, res) => {
 
     if (number === 1) {
       if (loggedUser.following.length > 0) {
-        posts = await PostModel.find({ user: { $in: [userId, ...loggedUser.following.map((following) => following.user)] } }) //$in is like an OR condition return this or that
+        posts = await PostModel.find({
+          user: { $in: [userId, ...loggedUser.following.map((following) => following.user)] },
+        }) //$in is like an OR condition return this or that
           .limit(size)
           .sort({ createdAt: -1 })
           .populate("user")
@@ -65,7 +68,9 @@ router.get("/", authMiddleware, async (req, res) => {
       const skips = size * (number - 1); // this is to skip over previously send posts
 
       if (loggedUser.following.length > 0) {
-        posts = await PostModel.find({ user: { $in: [userId, ...loggedUser.following.map((following) => following.user)] } }) //$in is like an OR condition return this or that
+        posts = await PostModel.find({
+          user: { $in: [userId, ...loggedUser.following.map((following) => following.user)] },
+        }) //$in is like an OR condition return this or that
           .skip(skips)
           .limit(size)
           .sort({ createdAt: -1 })
@@ -165,15 +170,21 @@ router.post("/like/:postId", authMiddleware, async (req, res) => {
 
     const post = await PostModel.findById(postId);
 
-    if (!post) return res.status(404).send("Post not found");
+    if (!post) return res.status(404).send("No Post Found");
 
     //check if the post have already been like
     const isLiked = post.likes.filter((like) => like.user.toString() === userId).length > 0;
 
-    if (isLiked) return res.status(401).send("Post already liked");
+    if (isLiked) return res.status(401).send("Post already liked"); 
 
     await post.likes.unshift({ user: userId });
     await post.save();
+
+    //send notification
+    //if liking your won post don't send notificati  on
+    if(post.user.toString() !== userId){
+      await newLikeNotification(userId, postId, post.user.toString( ))
+    }
 
     return res.status(200).send("Post liked");
   } catch (error) {
@@ -201,6 +212,11 @@ router.put("/unlike/:postId", authMiddleware, async (req, res) => {
 
     await post.likes.splice(index, 1);
     await post.save();
+
+    //remove notification
+    if (post.user.toString() !== userId) {
+      await removeLikeNotification(userId, postId, post.user.toString());
+    }
 
     return res.status(200).send("Post unliked");
   } catch (error) {
