@@ -42,47 +42,56 @@ router.post("/", authMiddleware, async (req, res) => {
 /***** GET  POSTS  ******/
 router.get("/", authMiddleware, async (req, res) => {
   const { pageNumber } = req.query;
-  const number = Number(pageNumber);
-  const size = 8;
-  const { userId } = req;
 
   try {
-    /***** GET THE POSTS OF ONLY THE USERS I'M FOLLOWING OR MY OWN POST ******/
-    const loggedUser = await FollowerModel.findOne({ user: userId }).select("-followers"); //we only the need the following data
+    const number = Number(pageNumber);
+    const size = 8;
+    const { userId } = req;
+
+    const loggedUser = await FollowerModel.findOne({ user: userId }).select("-followers");
 
     let posts = [];
 
     if (number === 1) {
       if (loggedUser.following.length > 0) {
         posts = await PostModel.find({
-          user: { $in: [userId, ...loggedUser.following.map((following) => following.user)] },
-        }) //$in is like an OR condition return this or that
+          user: {
+            $in: [userId, ...loggedUser.following.map((following) => following.user)],
+          },
+        })
           .limit(size)
           .sort({ createdAt: -1 })
           .populate("user")
           .populate("comments.user");
-      } else {
-        //return the post of the loggedin user
+      }
+      //
+      else {
         posts = await PostModel.find({ user: userId })
           .limit(size)
           .sort({ createdAt: -1 })
           .populate("user")
           .populate("comments.user");
       }
-    } else {
-      const skips = size * (number - 1); // this is to skip over previously send posts
+    }
+
+    //
+    else {
+      const skips = size * (number - 1);
 
       if (loggedUser.following.length > 0) {
         posts = await PostModel.find({
-          user: { $in: [userId, ...loggedUser.following.map((following) => following.user)] },
-        }) //$in is like an OR condition return this or that
+          user: {
+            $in: [userId, ...loggedUser.following.map((following) => following.user)],
+          },
+        })
           .skip(skips)
           .limit(size)
           .sort({ createdAt: -1 })
           .populate("user")
           .populate("comments.user");
-      } else {
-        //return the post of the loggedin user
+      }
+      //
+      else {
         posts = await PostModel.find({ user: userId })
           .skip(skips)
           .limit(size)
@@ -270,8 +279,10 @@ router.post("/comment/:postId", authMiddleware, async (req, res) => {
 
     await post.save();
 
+    const postByUserId = post.user.toString();
+
     if (post.user.toString() !== userId) {
-      await newCommentNotification(postId, userId, post.user.toString(), text);
+      await newCommentNotification(postId, newComment._id, userId, postByUserId, text);
     }
 
     return res.status(200).json(newComment._id);

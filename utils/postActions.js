@@ -39,7 +39,7 @@ export const deletePost = async (postId, setPosts, setShowToast) => {
 export const likePost = async (postId, userId, setLikes, like = true) => {
   try {
     if (like) {
-      await Axios.post(`.like/${postId}`);
+      await Axios.post(`like/${postId}`);
       setLikes((prev) => [...prev, { user: userId }]); //in the model the likes takes one field user which is the id of the user liking the post
     } else if (!like) {
       //which means the user wants to unlike the post
