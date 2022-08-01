@@ -13,17 +13,15 @@ import FollowerNotification from "../components/Notifications/FollowerNotificati
 const notifications = ({ notifications, errorLoading, user, userFollowStats }) => {
   const [loggedUserFollowStats, setUserFollowStats] = useState(userFollowStats);
 
-  const notificationRead = async () => {
-    try {
-      await axios.post(`${baseUrl}/api/notifications`, {}, { Authorization: cookie.get("token") });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   /********* USEFFECT *********/
   useEffect(() => {
-    notificationRead();
+    (async () => {
+      try {
+        await axios.post(`${baseUrl}/api/notifications`, {}, { headers: { Authorization: cookie.get("token") } });
+      } catch (error) {
+        console.log(error);
+      }
+    })();
   }, []);
 
   return (

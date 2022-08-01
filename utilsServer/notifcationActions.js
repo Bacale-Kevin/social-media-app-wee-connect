@@ -31,8 +31,6 @@ const newLikeNotification = async (userId, postId, userToNotifyId) => {
       date: Date.now(),
     };
 
-    console.log("userToNotify --> ", userToNotify);
-
     await userToNotify.notifications.unshift(newNotifcation);
     await userToNotify.save();
 

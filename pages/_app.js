@@ -22,7 +22,11 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
   let pageProps = {};
 
   //all the application protected routes goes here
-  const protectedRoutes = ctx.pathname === "/" || ctx.pathname === "/[username]" || ctx.pathname === "/notifications";
+  const protectedRoutes =
+    ctx.pathname === "/" ||
+    ctx.pathname === "/[username]" ||
+    ctx.pathname === "/notifications" ||
+    ctx.pathname === "/post/[postId]";
 
   if (!token) {
     //if user is not logged in redirect to logn route
