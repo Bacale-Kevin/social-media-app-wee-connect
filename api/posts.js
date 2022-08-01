@@ -6,7 +6,12 @@ const authMiddleware = require("../middleware/authMiddleware");
 const FollowerModel = require("../models/FollowerModel");
 const PostModel = require("../models/PostModel");
 const UserModel = require("../models/UserModel");
-const { newLikeNotification, removeLikeNotification } = require("../utilsServer/notifcationActions");
+const {
+  newLikeNotification,
+  removeLikeNotification,
+  newCommentNotification,
+  removeCommentNotification,
+} = require("../utilsServer/notifcationActions");
 
 /***** Create A POST ******/
 router.post("/", authMiddleware, async (req, res) => {
@@ -175,15 +180,15 @@ router.post("/like/:postId", authMiddleware, async (req, res) => {
     //check if the post have already been like
     const isLiked = post.likes.filter((like) => like.user.toString() === userId).length > 0;
 
-    if (isLiked) return res.status(401).send("Post already liked"); 
+    if (isLiked) return res.status(401).send("Post already liked");
 
     await post.likes.unshift({ user: userId });
     await post.save();
 
     //send notification
     //if liking your won post don't send notificati  on
-    if(post.user.toString() !== userId){
-      await newLikeNotification(userId, postId, post.user.toString( ))
+    if (post.user.toString() !== userId) {
+      await newLikeNotification(userId, postId, post.user.toString());
     }
 
     return res.status(200).send("Post liked");
@@ -265,6 +270,10 @@ router.post("/comment/:postId", authMiddleware, async (req, res) => {
 
     await post.save();
 
+    if (post.user.toString() !== userId) {
+      await newCommentNotification(postId, userId, post.user.toString(), text);
+    }
+
     return res.status(200).json(newComment._id);
   } catch (error) {
     console.log(error);
@@ -307,6 +316,10 @@ router.delete("/:postId/:commentId", authMiddleware, async (req, res) => {
 
     await post.comments.splice(index, 1);
     await post.save();
+
+    if (post.user.toString() !== userId) {
+      await removeCommentNotification(postId, commentId, post.user.toString());
+    }
 
     return res.status(200).json("Comment Deleted Successfully ");
   } catch (error) {
