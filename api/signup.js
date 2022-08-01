@@ -7,15 +7,16 @@ const isEmail = require("validator/lib/isEmail"); // to validate the email addre
 const FollowerModel = require("../models/FollowerModel");
 const ProfileModel = require("../models/ProfileModel");
 const UserModel = require("../models/UserModel");
-const userPng =
-  "https://res.cloudinary.com/bacale/image/upload/v1658491664/wee-connect/upload/user_default_l08jam.png"; //default profile pic in case the user doesn't enter a picture
+const NotificationModel = require("../models/NotificationModel");
+
+const userPng = "https://res.cloudinary.com/bacale/image/upload/v1658491664/wee-connect/upload/user_default_l08jam.png"; //default profile pic in case the user doesn't enter a picture
 
 const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
 
 /********** Checks whether the username has been taken or not ***********/
 router.get("/:username", async (req, res) => {
   const { username } = req.params;
-//   console.log(req.params);
+  //   console.log(req.params);
   try {
     //validate length
     if (username.length < 1) return res.status(401).send("Invalid");
@@ -36,8 +37,7 @@ router.get("/:username", async (req, res) => {
 
 /********** Create New User ***********/
 router.post("/", async (req, res) => {
-  const { name, email, password, username, bio, facebook, youtube, twitter, instagram } =
-    req.body.user;
+  const { name, email, password, username, bio, facebook, youtube, twitter, instagram } = req.body.user;
 
   try {
     //validations
@@ -79,6 +79,8 @@ router.post("/", async (req, res) => {
 
     /********** Now Create The Follower Model **********/
     await new FollowerModel({ user: user._id, followers: [], following: [] }).save();
+
+    await new NotificationModel({ user: user._id, notifications: [] }).save();
 
     /********** Send Token To The Front-End **********/
     const payload = { userId: user._id };

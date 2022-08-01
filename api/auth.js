@@ -7,6 +7,7 @@ const isEmail = require("validator/lib/isEmail"); // to validate the email addre
 const FollowerModel = require("../models/FollowerModel");
 const UserModel = require("../models/UserModel");
 const authMiddleware = require("../middleware/authMiddleware");
+const NotificationModel = require("../models/NotificationModel");
 
 /***** This routes gets the information of the authenticated user  *****/
 router.get("/", authMiddleware, async (req, res) => {
@@ -45,6 +46,12 @@ router.post("/", async (req, res) => {
 
     if (!isPassword) {
       return res.status(401).send("Invalid Credentials");
+    }
+
+    const notifcationModel = await NotificationModel.findOne({ user: user._id });
+
+    if (!notifcationModel) {
+      await new NotificationModel({ user: user._id, notifications: [] }).save();
     }
 
     const payload = { userId: user._id };
