@@ -1,12 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { parseCookies } from "nookies";
+import { Segment, Header, Divider, Comment, Grid, Icon } from "semantic-ui-react";
+import { useRouter } from "next/router";
 
+import { NoMessages } from "../components/Layout/NoData";
+import ChatList from "../components/Chats/Chat";
+import ChatListSearch from "../components/Chats/ChatListSearch";
 import baseUrl from "../utils/baseUrl";
 
-const messages = ({ chatsData }) => {
-    const [chats, setChats] = useState(chatsData)
-  return <div>messages</div>;
+const messages = ({ chatsData, user }) => {
+  const [chats, setChats] = useState(chatsData);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (chats.length > 0 && !router.query.messages)
+      router.push(`/messages?message=${chats[0].messagesWith}`, undefined, { shallow: true });
+  }, []);
+
+  return (
+    <Segment padded basic size="large" style={{ marginTop: "5px" }}>
+      <Header icon="home" content="Go Back" onClick={() => router.push("/")} style={{ cursor: "pointer" }} />
+      <Divider hidden />
+
+      <div style={{ marginBottom: "10px" }}>
+        <ChatListSearch user={user} chats={chats} setChats={setChats} />
+      </div>
+
+      {chats.length > 0 ? (
+        <>
+          <Grid stackable>
+            <Grid.Column width={4}>
+              <Comment.Group size="big">
+                <Segment raised style={{ overflow: "auto", maxHeight: "32rem " }}>
+                  {chats.map((chat, i) => (
+                    <ChatList key={i} chat={chat} setChats={setChats} />
+                  ))}
+                </Segment>
+              </Comment.Group>
+            </Grid.Column>
+          </Grid>
+        </>
+      ) : (
+        <>
+          <NoMessages />
+        </>
+      )}
+    </Segment>
+  );
 };
 
 export async function getServerSideProps(ctx) {
