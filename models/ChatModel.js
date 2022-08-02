@@ -6,7 +6,7 @@ const ChatSchema = new Schema({
 
   chats: [
     {
-      messagesWith: { type: Schema.Types.ObjectId, ref: "User" }, //To who i my sending the messag e to
+      messagesWith: { type: Schema.Types.ObjectId, ref: "User" }, //To who i my sending the message to
       messages: [
         {
           msg: { type: String, require: true },
@@ -16,7 +16,7 @@ const ChatSchema = new Schema({
         },
       ],
     },
-  ],
+  ], 
 });
 
 module.exports = mongoose.model("Chat", ChatSchema);
