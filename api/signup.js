@@ -8,6 +8,7 @@ const FollowerModel = require("../models/FollowerModel");
 const ProfileModel = require("../models/ProfileModel");
 const UserModel = require("../models/UserModel");
 const NotificationModel = require("../models/NotificationModel");
+const ChatModel = require("../models/ChatModel");
 
 const userPng = "https://res.cloudinary.com/bacale/image/upload/v1658491664/wee-connect/upload/user_default_l08jam.png"; //default profile pic in case the user doesn't enter a picture
 
@@ -81,6 +82,8 @@ router.post("/", async (req, res) => {
     await new FollowerModel({ user: user._id, followers: [], following: [] }).save();
 
     await new NotificationModel({ user: user._id, notifications: [] }).save();
+
+    await new ChatModel({ user: user._id, chats: []}).save()
 
     /********** Send Token To The Front-End **********/
     const payload = { userId: user._id };
