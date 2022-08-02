@@ -26,7 +26,8 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     ctx.pathname === "/" ||
     ctx.pathname === "/[username]" ||
     ctx.pathname === "/notifications" ||
-    ctx.pathname === "/post/[postId]";
+    ctx.pathname === "/post/[postId]" ||
+    ctx.pathname === "/messages";
 
   if (!token) {
     //if user is not logged in redirect to logn route
