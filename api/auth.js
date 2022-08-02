@@ -8,6 +8,7 @@ const FollowerModel = require("../models/FollowerModel");
 const UserModel = require("../models/UserModel");
 const authMiddleware = require("../middleware/authMiddleware");
 const NotificationModel = require("../models/NotificationModel");
+const ChatModel = require("../models/ChatModel");
 
 /***** This routes gets the information of the authenticated user  *****/
 router.get("/", authMiddleware, async (req, res) => {
@@ -48,10 +49,16 @@ router.post("/", async (req, res) => {
       return res.status(401).send("Invalid Credentials");
     }
 
-    const notifcationModel = await NotificationModel.findOne({ user: user._id });
+    const notificationModel = await NotificationModel.findOne({ user: user._id });
 
-    if (!notifcationModel) {
+    if (!notificationModel) {
       await new NotificationModel({ user: user._id, notifications: [] }).save();
+    }
+
+    const chatModel = await ChatModel.findOne({ user: user._id });
+
+    if (!chatModel) {
+      await new ChatModel({ user: user._id, chats: [] }).save();
     }
 
     const payload = { userId: user._id };
