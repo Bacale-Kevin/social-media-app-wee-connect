@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { parseCookies } from "nookies";
 import { Segment, Header, Divider, Comment, Grid, Icon } from "semantic-ui-react";
 import { useRouter } from "next/router";
+import io from "socket.io-client";
 
 import { NoMessages } from "../components/Layout/NoData";
 import ChatList from "../components/Chats/Chat";
@@ -12,8 +13,22 @@ import baseUrl from "../utils/baseUrl";
 const messages = ({ chatsData, user }) => {
   const [chats, setChats] = useState(chatsData);
   const router = useRouter();
+  const socket = useRef();
 
   useEffect(() => {
+    //initialize with the baseUrl
+    if (!socket.current) {
+      socket.current = io(baseUrl);
+    }
+    //if connected
+    if (socket.current) {
+      socket.current.emit("myname", { name: "Kevin", age: "31" });
+
+      socket.current.on("serverdata", ({ name }) => {
+        console.log(name);
+      });
+    }
+
     if (chats.length > 0 && !router.query.messages)
       router.push(`/messages?message=${chats[0].messagesWith}`, undefined, { shallow: true });
   }, []);
