@@ -34,12 +34,12 @@ export const FooterMessage = () => {
         <>
           <Message attached="bottom" info>
             <Icon name="lock" />
-            <Link href="/login">Forgot Password</Link>
+            <Link href="/reset">Forgot Password</Link>
           </Message>
 
           <Message attached="bottom" warning>
             <Icon name="help" />
-            New User ? {" "} <Link href="/login">Create an Account Here</Link>
+            New User ? <Link href="/signup">Create an Account Here</Link>
           </Message>
         </>
       )}
