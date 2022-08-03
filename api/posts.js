@@ -48,81 +48,81 @@ router.get("/", authMiddleware, async (req, res) => {
     const size = 8;
     const { userId } = req;
 
-    const loggedUser = await FollowerModel.findOne({ user: userId }).select("-followers");
+    // const loggedUser = await FollowerModel.findOne({ user: userId }).select("-followers");
 
-    let posts = [];
-
-    if (number === 1) {
-      if (loggedUser.following.length > 0) {
-        posts = await PostModel.find({
-          user: {
-            $in: [userId, ...loggedUser.following.map((following) => following.user)],
-          },
-        })
-          .limit(size)
-          .sort({ createdAt: -1 })
-          .populate("user")
-          .populate("comments.user");
-      }
-      //
-      else {
-        posts = await PostModel.find({ user: userId })
-          .limit(size)
-          .sort({ createdAt: -1 })
-          .populate("user")
-          .populate("comments.user");
-      }
-    }
-
-    //
-    else {
-      const skips = size * (number - 1);
-
-      if (loggedUser.following.length > 0) {
-        posts = await PostModel.find({
-          user: {
-            $in: [userId, ...loggedUser.following.map((following) => following.user)],
-          },
-        })
-          .skip(skips)
-          .limit(size)
-          .sort({ createdAt: -1 })
-          .populate("user")
-          .populate("comments.user");
-      }
-      //
-      else {
-        posts = await PostModel.find({ user: userId })
-          .skip(skips)
-          .limit(size)
-          .sort({ createdAt: -1 })
-          .populate("user")
-          .populate("comments.user");
-      }
-    }
-
-    return res.json(posts);
-
-    /****** OLD CODE TO GET ALL THE POSTS *****/
-    // let posts;
+    // let posts = [];
 
     // if (number === 1) {
-    //   posts = await PostModel.find()
-    //     .limit(size) //by default only eight post will be send
-    //     .sort({ createdAt: -1 })
-    //     .populate("user")
-    //     .populate("comments.user");
-    // } else {
-    //   const skips = size * (number - 1); // this is to skip over previously send post
-    //   posts = await PostModel.find()
-    //     .skip(skips)
-    //     .limit(size)
-    //     .sort({ createdAt: -1 })
-    //     .populate("user")
-    //     .populate("comments.user");
+    //   if (loggedUser.following.length > 0) {
+    //     posts = await PostModel.find({
+    //       user: {
+    //         $in: [userId, ...loggedUser.following.map((following) => following.user)],
+    //       },
+    //     })
+    //       .limit(size)
+    //       .sort({ createdAt: -1 })
+    //       .populate("user")
+    //       .populate("comments.user");
+    //   }
+    //   //
+    //   else {
+    //     posts = await PostModel.find({ user: userId })
+    //       .limit(size)
+    //       .sort({ createdAt: -1 })
+    //       .populate("user")
+    //       .populate("comments.user");
+    //   }
     // }
 
-    // return res.status(200).json(posts);
+    // //
+    // else {
+    //   const skips = size * (number - 1);
+
+    //   if (loggedUser.following.length > 0) {
+    //     posts = await PostModel.find({
+    //       user: {
+    //         $in: [userId, ...loggedUser.following.map((following) => following.user)],
+    //       },
+    //     })
+    //       .skip(skips)
+    //       .limit(size)
+    //       .sort({ createdAt: -1 })
+    //       .populate("user")
+    //       .populate("comments.user");
+    //   }
+    //   //
+    //   else {
+    //     posts = await PostModel.find({ user: userId })
+    //       .skip(skips)
+    //       .limit(size)
+    //       .sort({ createdAt: -1 })
+    //       .populate("user")
+    //       .populate("comments.user");
+    //   }
+    // }
+
+    // return res.json(posts);
+
+    /****** OLD CODE TO GET ALL THE POSTS *****/
+    let posts;
+
+    if (number === 1) {
+      posts = await PostModel.find()
+        .limit(size) //by default only eight post will be send
+        .sort({ createdAt: -1 })
+        .populate("user")
+        .populate("comments.user");
+    } else {
+      const skips = size * (number - 1); // this is to skip over previously send post
+      posts = await PostModel.find()
+        .skip(skips)
+        .limit(size)
+        .sort({ createdAt: -1 })
+        .populate("user")
+        .populate("comments.user");
+    }
+
+    return res.status(200).json(posts);
   } catch (error) {
     console.log(error);
     return res.status(500).send(`Server error`);

@@ -6,26 +6,32 @@ import { useRouter } from "next/router";
 import io from "socket.io-client";
 
 import { NoMessages } from "../components/Layout/NoData";
-import ChatList from "../components/Chats/Chat";
+import Chat from "../components/Chats/Chat";
 import ChatListSearch from "../components/Chats/ChatListSearch";
 import baseUrl from "../utils/baseUrl";
 
 const messages = ({ chatsData, user }) => {
   const [chats, setChats] = useState(chatsData);
+  const [connectedUsers, setConnectedUsers] = useState([])
   const router = useRouter();
   const socket = useRef();
+
+//   console.log(connectedUsers);
 
   useEffect(() => {
     //initialize with the baseUrl
     if (!socket.current) {
       socket.current = io(baseUrl);
     }
-    //if connected
+    //if connected 
     if (socket.current) {
-      socket.current.emit("myname", { name: "Kevin", age: "31" });
+      
+      socket.current.emit("join", { userId: user });
 
-      socket.current.on("serverdata", ({ name }) => {
-        console.log(name);
+      socket.current.on("connectedUsers", ({ users }) => {
+
+        console.log(users);
+        users.length > 0 && setConnectedUsers(users)
       });
     }
 
@@ -49,7 +55,7 @@ const messages = ({ chatsData, user }) => {
               <Comment.Group size="big">
                 <Segment raised style={{ overflow: "auto", maxHeight: "32rem " }}>
                   {chats.map((chat, i) => (
-                    <ChatList key={i} chat={chat} setChats={setChats} />
+                    <Chat connectedUsers={connectedUsers} key={i} chat={chat} setChats={setChats} />
                   ))}
                 </Segment>
               </Comment.Group>

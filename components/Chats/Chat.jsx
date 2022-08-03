@@ -4,10 +4,12 @@ import { useRouter } from "next/router";
 
 import calculateTime from "../../utils/calculateTime";
 
-const Chat = ({ chat, setChats }) => {
+const Chat = ({ chat, setChats, connectedUsers }) => {
   const router = useRouter();
 
-  
+  const isOnline =
+    connectedUsers.length > 0 && connectedUsers.filter((user) => user.userId === chat.messagesWith).length > 0;
+
 
   return (
     <>
@@ -25,7 +27,7 @@ const Chat = ({ chat, setChats }) => {
             <Comment.Content>
               <Comment.Author as="a">
                 {chat.name}
-                {/* {isOnline && <Icon name="circle" size="small" color="green" />} */}
+                {isOnline && <Icon name="circle" size="small" color="green" />}
               </Comment.Author>
 
               <Comment.Metadata>
