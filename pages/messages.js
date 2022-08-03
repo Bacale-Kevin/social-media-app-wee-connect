@@ -16,6 +16,10 @@ const messages = ({ chatsData, user }) => {
   const router = useRouter();
   const socket = useRef();
 
+<<<<<<< HEAD
+=======
+//   console.log(connectedUsers);
+>>>>>>> main
 
   useEffect(() => {
     //initialize with the baseUrl
