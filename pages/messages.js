@@ -16,7 +16,10 @@ const messages = ({ chatsData, user }) => {
   const router = useRouter();
   const socket = useRef();
 
+<<<<<<< HEAD
+=======
 //   console.log(connectedUsers);
+>>>>>>> main
 
   useEffect(() => {
     //initialize with the baseUrl
@@ -29,9 +32,7 @@ const messages = ({ chatsData, user }) => {
       socket.current.emit("join", { userId: user });
 
       socket.current.on("connectedUsers", ({ users }) => {
-
-        console.log(users);
-        users.length > 0 && setConnectedUsers(users)
+        users.length > 0 && setConnectedUsers(users);
       });
     }
 

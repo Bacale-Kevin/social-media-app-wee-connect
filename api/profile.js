@@ -9,13 +9,12 @@ const ProfileModel = require("../models/ProfileModel");
 const UserModel = require("../models/UserModel");
 const { newFollowerNotification, removeFollowerNotification } = require("../utilsServer/notifcationActions");
 
-
 /***** GET PROFILE INFO ******/
 router.get("/:username", authMiddleware, async (req, res) => {
   const { username } = req.params;
 
   try {
-    const user = await UserModel.findOne({ username: username.toLocaleLowerCase() });
+    const user = await UserModel.findOne({ username: username.toLowerCase() });
 
     if (!user) return res.status(404).send(`User not found `);
 
@@ -45,7 +44,10 @@ router.get("/posts/:username", authMiddleware, async (req, res) => {
 
     if (!user) return res.status(404).send(`User not found`);
 
-    const posts = await PostModel.find({ user: user._id }).sort({ createdAt: -1 }).populate("user").populate("comments.user");
+    const posts = await PostModel.find({ user: user._id })
+      .sort({ createdAt: -1 })
+      .populate("user")
+      .populate("comments.user");
 
     if (!posts) return res.status(404).send(`Post not found`);
 
@@ -105,7 +107,8 @@ router.post("/follow/:userToFollowId", authMiddleware, async (req, res) => {
 
     //check if the user has not already follow the other user before
     const isFollowing =
-      user.following.length > 0 && user.following.filter((following) => following.user.toString() === userToFollowId).length > 0;
+      user.following.length > 0 &&
+      user.following.filter((following) => following.user.toString() === userToFollowId).length > 0;
 
     if (isFollowing) return res.status(401).send("User already followed");
 
@@ -116,7 +119,7 @@ router.post("/follow/:userToFollowId", authMiddleware, async (req, res) => {
     await user.save();
 
     //notification
-    await newFollowerNotification(userId, userToFollowId)
+    await newFollowerNotification(userId, userToFollowId);
 
     return res.status(200).send("Success");
   } catch (error) {
@@ -151,7 +154,9 @@ router.put("/unfollow/:userToUnfollowId", authMiddleware, async (req, res) => {
       return res.status(401).send("User Not Followed before");
     }
 
-    const removeFollowing = await user.following.map((following) => following.user.toString()).indexOf(userToUnfollowId);
+    const removeFollowing = await user.following
+      .map((following) => following.user.toString())
+      .indexOf(userToUnfollowId);
 
     await user.following.splice(removeFollowing, 1);
     await user.save();
